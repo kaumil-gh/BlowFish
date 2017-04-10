@@ -3,15 +3,28 @@ package blowfish;
 import java.applet.Applet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
+
 
 /**
  *
  * @author gryffin
  */
 public class BlowFish extends Applet {
+    
+    FileInputStream fis=null;
+    DataOutputStream dos=null;
+    DataInputStream dis =null;
+    FileOutputStream fos=null;
+    long startTime_total=0;
+    long endTime_total=0;
+    public Float time_total=0f, tt;
     
     
     final static long POW2_32 =4294967296L;
@@ -208,7 +221,10 @@ public class BlowFish extends Applet {
 	0x082efa98L, 0xec4e6c89L, 0x452821e6L, 0x38d01377L, 0xbe5466cfL, 0x34e90c6cL,
 	0xc0ac29b7L, 0xc97c50ddL, 0x3f84d5b5L, 0xb5470917L, 0x9216d5d9L, 0x8979fb1bL};
 
-
+    
+    BlowFish() {        
+    }
+       
     /**
      * @param args the command line arguments
      */
@@ -216,17 +232,152 @@ public class BlowFish extends Applet {
         // TODO code application logic here
         
         Scanner sc =new Scanner(System.in);
-		
-	FileInputStream fis=null;
-	DataOutputStream dos=null;
-	DataInputStream dis =null;
-	FileOutputStream fos=null;
-        long startTime_total=0;
-	long endTime_total=0;
-	Float time_total=0f;
         
         MainScreen ob = new MainScreen();
         ob.start();
+        
+        String inputLine="";
+	int countwrong=0;
+	int exit=0;
+        
+    }
+    
+    public void Calculation(String keyx, File filex, int choicex) throws Exception
+    {
+        
+        String key = keyx;
+        File file = filex;
+        int choice = choicex;
+        
+        //String filey = file.getAbsolutePath();
+        
+        switch(choice)
+        {
+            case 1:
+                startTime_total = System.nanoTime();
+									
+		fis = new FileInputStream(file);
+		dis = new  DataInputStream(fis);
+                
+		String fileout = "/home/gryffin/NetBeansProjects/BlowFish/cipher";
+		fos  = new FileOutputStream(fileout);
+		dos  = new DataOutputStream(fos);
+						
+		sbox0=sbox0_original.clone();
+		sbox1=sbox1_original.clone();
+		sbox2=sbox2_original.clone();
+		sbox3=sbox3_original.clone();
+		parray=parray_original.clone();
+							
+		Initialize_bf(key);
+                
+                System.out.println("\nEncryption Process is running.....");
+                
+                while(dis.available()>0)
+		{
+                    long read_ip = dis.readLong();
+                    long op = Blowfish_Encrypt(Long.toHexString(read_ip));
+                    dos.writeLong(op);
+		}
+                System.out.println("da");
+						
+		endTime_total = System.nanoTime();
+                time_total = Float.parseFloat(""+(endTime_total-startTime_total));
+                tt = (time_total/1000000000);
+                
+                JOptionPane.showMessageDialog(null, "\nFile is Encrypted Successfully!\n\nTotal Elapsed Time: "+tt+"s"); 
+                
+                break;
+
+                
+            case 2:
+                startTime_total = System.nanoTime();
+									
+		fis = new FileInputStream(file);
+		dis = new  DataInputStream(fis);
+		
+                String fileoutx = "/home/gryffin/NetBeansProjects/BlowFish/decipher";
+		fos  = new FileOutputStream(fileoutx);
+		dos  = new DataOutputStream(fos);
+						
+		sbox0=sbox0_original.clone();
+		sbox1=sbox1_original.clone();
+		sbox2=sbox2_original.clone();
+		sbox3=sbox3_original.clone();
+		parray=parray_original.clone();
+							
+		Initialize_bf(key);
+                
+                System.out.println("\nDecryption Process is running.....");
+                
+                while(dis.available()>0)
+		{
+                    long read_ip = dis.readLong();
+                    long op=Blowfish_Decrypt(Long.toHexString(read_ip));
+                    dos.writeLong(op);
+                }
+						
+		endTime_total = System.nanoTime();
+                time_total = Float.parseFloat(""+(endTime_total-startTime_total));
+                tt = (time_total/1000000000);
+                
+                JOptionPane.showMessageDialog(null, "\nFile is Decrypted Successfully!\n\nTotal Elapsed Time: "+tt+"s");
+                
+                break;
+                
+            case 3:
+                
+                sbox0=sbox0_original.clone();
+		sbox1=sbox1_original.clone();
+		sbox2=sbox2_original.clone();
+		sbox3=sbox3_original.clone();
+		parray=parray_original.clone();
+                
+                String plaintext = JOptionPane.showInputDialog("Enter Plaintext(64-bit): ");
+                
+                Initialize_bf(key);
+						
+		Long op=Blowfish_Encrypt(plaintext);
+		String op_str=Long.toHexString(op);
+								
+		while(op_str.length()!=16)
+		{
+                    op_str="0"+op_str;
+		}
+                
+                String cipheropr = op_str.toUpperCase();
+                
+                JOptionPane.showMessageDialog(null, "\nCipher Text is: " + cipheropr);
+                
+                break;
+                
+            case 4:
+                
+                sbox0=sbox0_original.clone();
+		sbox1=sbox1_original.clone();
+		sbox2=sbox2_original.clone();
+		sbox3=sbox3_original.clone();
+		parray=parray_original.clone();
+                
+                String ciphertext = JOptionPane.showInputDialog("Enter CipherText(64-bit): ");
+                
+                Initialize_bf(key);
+						
+		op=Blowfish_Decrypt(ciphertext);
+		op_str=Long.toHexString(op);
+								
+		while(op_str.length()!=16)
+		{
+                    op_str="0"+op_str;
+		}
+                
+                String plainopr = op_str.toUpperCase();
+                
+                JOptionPane.showMessageDialog(null, "\nPlainText is: " + plainopr);
+                
+                break;
+        }
+
     }
     
     static void Initialize_bf(String key_ip)
