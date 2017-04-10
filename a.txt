@@ -1,0 +1,5 @@
+cd Downloads(wherever your .run file is downloaded)
+chmod +x xampp-linux-1.8.3-5-installer.run(whatever your .run file is named)
+sudo ./xampp-linux-1.8.3-5-installer.run
+You will be prompted to enter password for your user
+Enter password and press enter.

@@ -1,6 +1,11 @@
 package blowfish;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -14,6 +19,7 @@ public class MainScreen extends javax.swing.JApplet {
      */
     
     String key = "";
+    File file = null;
     @Override
     public void init() {
         /* Set the Nimbus look and feel */
@@ -62,6 +68,7 @@ public class MainScreen extends javax.swing.JApplet {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFileChooser1 = new javax.swing.JFileChooser();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -70,6 +77,7 @@ public class MainScreen extends javax.swing.JApplet {
         jLabel1 = new javax.swing.JLabel();
 
         setBackground(java.awt.Color.black);
+        setPreferredSize(new java.awt.Dimension(400, 300));
 
         jButton1.setBackground(java.awt.Color.white);
         jButton1.setForeground(java.awt.Color.blue);
@@ -125,43 +133,44 @@ public class MainScreen extends javax.swing.JApplet {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(154, 154, 154)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1))
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 90, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton5)
-                        .addGap(173, 173, 173))
+                        .addComponent(jLabel1)
+                        .addGap(162, 162, 162))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButton4)
                             .addComponent(jButton3))
-                        .addGap(77, 77, 77))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(152, 152, 152))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(161, 161, 161)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(86, 86, 86))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton5)
+                .addGap(177, 177, 177))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addGap(38, 38, 38)
+                .addGap(36, 36, 36)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addGap(12, 12, 12)
-                .addComponent(jButton3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -175,11 +184,36 @@ public class MainScreen extends javax.swing.JApplet {
         if(choice==1)
         {
             String pass = JOptionPane.showInputDialog("Enter Password: ");
+            int counter=0;
+            while(counter<pass.length())
+            {
+		char c= pass.charAt(counter);
+		key+=Integer.valueOf(String.valueOf((int)c), 16);
+		counter++;
+            }
         }
         else
         {
             String hexa = JOptionPane.showInputDialog("Enter Hexadecimal String: ");
+            key = hexa;
         }
+        
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = jFileChooser1.getSelectedFile();
+            try {
+                BlowFish bfobj = new BlowFish();
+                try {
+                    bfobj.Calculation(key, file, 1);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "\nFile is Encrypted Successfully!\n\nTotal Elapsed Time: "+bfobj.tt+"s");
+                }
+            } catch (Exception ex) {
+                System.out.println("problem accessing file"+file.getAbsolutePath());
+            }
+        } else {
+        System.out.println("File access cancelled by user.");
+        }  
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
@@ -192,11 +226,37 @@ public class MainScreen extends javax.swing.JApplet {
         if(choice==1)
         {
             String pass = JOptionPane.showInputDialog("Enter Password: ");
+            int counter=0;
+            while(counter<pass.length())
+            {
+		char c= pass.charAt(counter);
+		key+=Integer.valueOf(String.valueOf((int)c), 16);
+		counter++;
+            }
         }
         else
         {
             String hexa = JOptionPane.showInputDialog("Enter Hexadecimal String: ");
+            key = hexa;
         }
+        
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = jFileChooser1.getSelectedFile();
+            try {
+                BlowFish bfobj = new BlowFish();
+                try {
+                    bfobj.Calculation(key, file, 2);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "\nFile is Decrypted Successfully!\n\nTotal Elapsed Time: "+bfobj.tt+"s");
+                }
+            } catch (Exception ex) {
+                System.out.println("problem accessing file"+file.getAbsolutePath());
+            }
+        } else {
+        System.out.println("File access cancelled by user.");
+        }
+        
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -209,11 +269,30 @@ public class MainScreen extends javax.swing.JApplet {
         if(choice==1)
         {
             String pass = JOptionPane.showInputDialog("Enter Password: ");
+            int counter=0;
+            while(counter<pass.length())
+            {
+		char c= pass.charAt(counter);
+		key+=Integer.valueOf(String.valueOf((int)c), 16);
+		counter++;
+            }
         }
         else
         {
             String hexa = JOptionPane.showInputDialog("Enter Hexadecimal String: ");
+            key = hexa;
         }
+        
+        try {
+                BlowFish bfobj = new BlowFish();
+                try {
+                    bfobj.Calculation(key, file, 3);
+                } catch (Exception ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (Exception ex) {
+                System.out.println("problem accessing file"+file.getAbsolutePath());
+            }
     }//GEN-LAST:event_jButton3MouseClicked
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
@@ -226,11 +305,29 @@ public class MainScreen extends javax.swing.JApplet {
         if(choice==1)
         {
             String pass = JOptionPane.showInputDialog("Enter Password: ");
+            int counter=0;
+            while(counter<pass.length())
+            {
+		char c= pass.charAt(counter);
+		key+=Integer.valueOf(String.valueOf((int)c), 16);
+		counter++;
+            }
         }
         else
         {
             String hexa = JOptionPane.showInputDialog("Enter Hexadecimal String: ");
+            key = hexa;
         }
+        try {
+                BlowFish bfobj = new BlowFish();
+                try {
+                    bfobj.Calculation(key, file, 4);
+                } catch (Exception ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (Exception ex) {
+                System.out.println("problem accessing file"+file.getAbsolutePath());
+            }
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
@@ -245,6 +342,8 @@ public class MainScreen extends javax.swing.JApplet {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
+    
 }
